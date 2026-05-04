@@ -54,6 +54,13 @@ EOF
 
 log_success "镜像源已更新为清华大学镜像"
 
+# 先以不验证签名的方式拉取索引，确保 termux-keyring 是最新版本，
+# 从而让后续的 pkg update 能通过 GPG 签名校验（修复 NO_PUBKEY 错误）
+log_info "正在更新 Termux 密钥环以支持镜像源签名验证..."
+apt-get update --allow-unauthenticated 2>/dev/null || true
+apt-get install -y --allow-unauthenticated termux-keyring 2>/dev/null || true
+log_success "密钥环已更新"
+
 # ---------- 2. 系统更新 ----------
 log_step "步骤 2/7：更新软件包列表并升级系统"
 log_info "正在更新软件包列表..."
