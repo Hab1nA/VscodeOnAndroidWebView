@@ -3,6 +3,7 @@
 #  start_web_ui.sh — 一键启动 Web 管理控制台
 #  功能: 检查环境 → 启用 Wake Lock → 启动 Python 后端
 #  使用: ./start_web_ui.sh
+#  依赖: code-server 需通过 pkg install code-server 安装 (运行 install.sh 完成)
 #===============================================================================
 
 set -euo pipefail
@@ -61,11 +62,11 @@ check_environment() {
     fi
     echo -e "${GREEN}[INFO]${NC}  后端脚本: ${SERVER_SCRIPT}"
 
-    # 检查 code-server
+    # 检查 code-server (通过 pkg install code-server 安装)
     if command -v code-server &>/dev/null; then
-        echo -e "${GREEN}[INFO]${NC}  code-server 已安装 ✓"
+        echo -e "${GREEN}[INFO]${NC}  code-server 已安装 ✓ (路径: $(command -v code-server))"
     else
-        echo -e "${YELLOW}[WARN]${NC} code-server 未安装，请先运行 install.sh。"
+        echo -e "${YELLOW}[WARN]${NC} code-server 未安装，请先运行 install.sh (将执行 pkg install code-server)。"
         echo -e "${YELLOW}[WARN]${NC} Web 控制台仍可启动，但无法启动 code-server。"
     fi
 }

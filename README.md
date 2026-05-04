@@ -8,7 +8,7 @@
 
 ```
 VscodeOnAndroidWebView/
-├── install.sh              # 一键安装脚本
+├── install.sh              # 一键安装脚本 (pkg install code-server 模式)
 ├── uninstall.sh            # 安全卸载脚本 (仅清理文件, 不卸载系统依赖)
 ├── start_web_ui.sh         # 启动 Web 管理控制台
 ├── web_ui/
@@ -45,13 +45,14 @@ chmod +x install.sh uninstall.sh start_web_ui.sh
 
 该脚本将自动完成以下操作：
 1. 更新 Termux 包管理器
-2. 安装基础依赖（Python、termux-api、wget、tar 等）
-3. 从 GitHub Release 下载 code-server 预编译包并部署
-4. 生成配置文件及随机密码
-5. 启用 Wake Lock 防止后台被杀
+2. **加载 x11-repo 和 tur-repo 仓库源**（code-server 位于 tur-repo 中）
+3. 安装基础依赖（Python、termux-api）
+4. **通过 `pkg install code-server` 安装 Termux 原生适配的 code-server**
+5. 生成配置文件及随机密码
+6. 启用 Wake Lock 防止后台被杀
 
-> 安装过程中，脚本会自动检测 CPU 架构（ARM64/AMD64），从 GitHub 下载匹配的 code-server 预编译包。
-> 无需 Node.js 或 npm！code-server 使用官方预编译二进制包，开箱即用。
+> **安装方式说明**：code-server 现在通过 Termux 的 `pkg` 包管理器直接安装，不再从 GitHub Release 下载预编译包。
+> tur-repo（Termux User Repository）包含了社区维护的 code-server 包，已针对 Android Bionic libc 做好适配，无需手动处理 node 兼容性问题。
 >
 > 安装完成后，**请务必记下终端中显示的登录密码！**
 
@@ -88,9 +89,10 @@ chmod +x install.sh uninstall.sh start_web_ui.sh
 | 启动 Web 管理台 | `./start_web_ui.sh` |
 | 手动启动 code-server | `code-server` |
 | 查找密码 | `cat ~/.config/code-server/config.yaml` |
-| 查看日志 | `cat ~/.local/share/code-server/code-server.log` |
+| 查看日志 | `cat ~/.config/code-server/code-server.log` |
 | 安全卸载 | `./uninstall.sh` |
 | 释放 Wake Lock | `termux-wake-unlock` |
+| 更新 code-server | `pkg upgrade code-server -y` |
 
 ---
 
@@ -105,11 +107,22 @@ chmod +x install.sh uninstall.sh start_web_ui.sh
 
 ## 常见问题
 
-### Q: 安装时下载 code-server 失败？
-A: 脚本会从 GitHub 下载预编译包。如果下载失败，请检查：
-1. 网络是否能正常访问 GitHub
-2. 可手动下载：访问 https://github.com/coder/code-server/releases
-3. 手动解压到 `${PREFIX}/opt/code-server/` 并创建符号链接
+### Q: 安装时提示找不到 code-server 包？
+A: code-server 位于 tur-repo 仓库中。请确认：
+1. `install.sh` 脚本已自动执行 `pkg install x11-repo -y` 和 `pkg install tur-repo -y`
+2. 如果手动安装，请先执行：
+   ```bash
+   pkg install x11-repo -y
+   pkg install tur-repo -y
+   pkg update
+   pkg install code-server -y
+   ```
+
+### Q: tur-repo 安装失败？
+A: 请检查：
+1. 网络是否能正常访问 Termux 包仓库
+2. 尝试手动执行 `termux-change-repo` 更换镜像源
+3. 确保 Termux 版本较新（推荐从 F-Droid 安装最新版）
 
 ### Q: 浏览器打不开管理页面？
 A: 请确认：
@@ -130,20 +143,23 @@ cat ~/.config/code-server/config.yaml | grep password
 ```
 
 ### Q: 如何更新 code-server？
-A: 重新运行安装脚本即可自动下载最新版本：
+A: 通过 pkg 更新即可：
 ```bash
-./uninstall.sh   # 先卸载旧版本（选择 yes）
-./install.sh     # 重新安装最新版
+pkg update && pkg upgrade code-server -y
+```
+或者重新运行安装脚本（会自动跳过已安装的包）：
+```bash
+./install.sh
 ```
 
 ### Q: 卸载脚本会删除我的 Python 和其他系统包吗？
-A: **不会。** `uninstall.sh` 仅清理 code-server 相关的配置文件、数据目录、预编译包安装目录和本项目文件，**绝不会**卸载任何系统级依赖包（python、termux-api 等）。
+A: **不会。** `uninstall.sh` 仅通过 `pkg uninstall code-server` 卸载 code-server，并清理相关配置文件、数据目录和本项目文件。**绝不会**卸载任何系统级依赖包（python、termux-api 等）。tur-repo 仓库源也默认保留，如需清除请手动执行 `pkg uninstall tur-repo -y`。
 
 ---
 
 ## 技术栈
 
-- **code-server**: 官方 GitHub Release 预编译二进制包（ARM64/AMD64）
+- **code-server**: 通过 Termux pkg 包管理器安装（tur-repo 社区仓库，已适配 Termux 环境）
 - **后端**: Python3 标准库 `http.server`（零外部依赖）
 - **前端**: 纯 HTML/CSS/JS（无框架，极简设计）
 - **进程管理**: Shell 脚本 + PID 文件

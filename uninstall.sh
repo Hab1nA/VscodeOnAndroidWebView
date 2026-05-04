@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 #===============================================================================
 #  uninstall.sh — 安全卸载 code-server 及本项目产生的文件
-#  重要: 仅清理安装脚本和 code-server 产生的文件/目录/配置
-#        绝不卸载任何系统级依赖包 (如 nodejs, python 等)
+#  重要: 仅清理 pkg 安装的 code-server 包和脚本产生的文件/目录/配置
+#        绝不卸载任何系统级依赖包 (如 python 等)
 #===============================================================================
 
 set -euo pipefail
@@ -38,8 +38,8 @@ check_termux() {
 confirm_uninstall() {
     echo ""
     echo -e "${YELLOW}╔══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${YELLOW}║  警告：此操作将清理 code-server 相关的配置和数据！    ║${NC}"
-    echo -e "${YELLOW}║  注意：不会卸载系统级依赖包 (nodejs, python 等)。     ║${NC}"
+    echo -e "${YELLOW}║  警告：此操作将卸载 code-server 并清理相关配置和数据！║${NC}"
+    echo -e "${YELLOW}║  注意：不会卸载系统级依赖包 (python 等)。             ║${NC}"
     echo -e "${YELLOW}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
     read -r -p "确认卸载？请输入 yes 继续: " confirm
@@ -77,30 +77,39 @@ step_stop_code_server() {
 }
 
 #===============================================================================
-# 步骤2: 卸载 code-server 可执行文件 (仅清理安装时部署的部分)
+# 步骤2: 通过 pkg 卸载 code-server 包
 #===============================================================================
 step_uninstall_code_server() {
-    log_step "正在卸载 code-server (GitHub Release 安装)..."
+    log_step "正在通过 pkg 卸载 code-server..."
 
-    # 移除符号链接
-    if [ -L "${PREFIX}/bin/code-server" ]; then
-        rm -f "${PREFIX}/bin/code-server"
-        log_info "已删除符号链接: ${PREFIX}/bin/code-server ✓"
-    elif [ -f "${PREFIX}/bin/code-server" ]; then
-        rm -f "${PREFIX}/bin/code-server"
-        log_info "已删除文件: ${PREFIX}/bin/code-server ✓"
+    # 检查 code-server 是否通过 pkg 安装
+    if pkg list-installed 2>/dev/null | grep -q "^code-server"; then
+        log_info "正在卸载 code-server 包..."
+        if pkg uninstall code-server -y 2>&1 | tail -10; then
+            log_info "code-server 包卸载成功 ✓"
+        else
+            log_warn "code-server 卸载遇到问题，尝试强制清除..."
+            pkg uninstall code-server -y 2>&1 || true
+        fi
+    else
+        log_info "code-server 包未通过 pkg 安装或已卸载。"
     fi
 
-    # 移除安装目录
+    # 清理可能残留的旧版符号链接或安装目录（兼容旧版 GitHub Release 安装方式）
+    if [ -L "${PREFIX}/bin/code-server" ] || [ -f "${PREFIX}/bin/code-server" ]; then
+        rm -f "${PREFIX}/bin/code-server"
+        log_info "已清理残留的 code-server 符号链接/文件 ✓"
+    fi
+
     if [ -d "${PREFIX}/opt/code-server" ]; then
         rm -rf "${PREFIX}/opt/code-server"
-        log_info "已删除安装目录: ${PREFIX}/opt/code-server ✓"
+        log_info "已清理残留的旧版安装目录: ${PREFIX}/opt/code-server ✓"
     fi
 
     # 清理可能遗留的临时下载文件
     rm -f "${TMPDIR:-/tmp}/code-server-*.tar.gz" 2>/dev/null || true
 
-    log_info "code-server 可执行文件清理完成 ✓"
+    log_info "code-server 卸载流程完成 ✓"
 }
 
 #===============================================================================
@@ -126,7 +135,21 @@ step_clean_config() {
 }
 
 #===============================================================================
-# 步骤4: 清理本项目目录自身
+# 步骤4: 清理 tur-repo 仓库源 (可选, 仅当用户确认)
+#===============================================================================
+step_clean_tur_repo() {
+    log_step "检查 tur-repo 仓库源..."
+
+    if pkg list-installed 2>/dev/null | grep -q "^tur-repo"; then
+        log_warn "tur-repo 仓库源仍处于安装状态。"
+        log_warn "如果你不再需要 Termux 用户仓库中的其他包，可以手动卸载:"
+        log_warn "  pkg uninstall tur-repo -y"
+        log_info "跳过自动卸载 tur-repo（可能被其他包依赖）。"
+    fi
+}
+
+#===============================================================================
+# 步骤5: 清理本项目目录自身
 #===============================================================================
 step_clean_project() {
     log_step "正在清理项目目录..."
@@ -155,7 +178,7 @@ main() {
     echo ""
     echo -e "${RED}╔══════════════════════════════════════════════════════════╗${NC}"
     echo -e "${RED}║   Termux code-server 安全卸载脚本                      ║${NC}"
-    echo -e "${RED}║   仅清理文件, 不动系统包                              ║${NC}"
+    echo -e "${RED}║   仅卸载 code-server 及清理文件, 不动系统包           ║${NC}"
     echo -e "${RED}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
 
@@ -164,13 +187,16 @@ main() {
     step_stop_code_server
     step_uninstall_code_server
     step_clean_config
+    step_clean_tur_repo
     step_clean_project
 
     echo ""
     echo -e "${GREEN}╔══════════════════════════════════════════════════════════╗${NC}"
     echo -e "${GREEN}║  卸载完成！                                           ║${NC}"
-    echo -e "${GREEN}║  系统级依赖包 (nodejs, python, termux-api 等)        ║${NC}"
+    echo -e "${GREEN}║  系统级依赖包 (python, termux-api 等)                 ║${NC}"
     echo -e "${GREEN}║  均已保留，未被删除。                                ║${NC}"
+    echo -e "${GREEN}║  如需清理 tur-repo 仓库源，请手动执行:               ║${NC}"
+    echo -e "${GREEN}║    pkg uninstall tur-repo -y                          ║${NC}"
     echo -e "${GREEN}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
 }

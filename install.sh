@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 #===============================================================================
-#  install.sh — Termux 环境下自动安装 code-server
-#  适用平台: Android Termux (ARM64 / ARM / x86_64)
-#  功能:   安装依赖 → 部署 code-server → 生成配置 → 保活wake-lock
+#  install.sh — Termux 环境下通过 pkg 自动安装 code-server
+#  适用平台: Android Termux (支持所有 Termux 支持的架构)
+#  功能:   加载 tur-repo 仓库源 → 安装依赖 → pkg install code-server → 生成配置 → 保活wake-lock
 #===============================================================================
 
 set -euo pipefail  # 严格模式: 遇错退出、未定义变量报错、管道报错
@@ -53,19 +53,56 @@ step_update_pkg() {
 }
 
 #===============================================================================
-# 步骤2: 安装基础依赖 (仅维持 code-server 运行的底层包)
+# 步骤2: 加载 tur-repo 仓库源 (包含 code-server 包)
+#===============================================================================
+step_install_tur_repo() {
+    log_step "正在加载 tur-repo 仓库源 (含有 code-server 包)..."
+
+    # 检查是否已安装 x11-repo (tur-repo 的前置依赖)
+    if pkg list-installed 2>/dev/null | grep -q "^x11-repo"; then
+        log_info "x11-repo 已安装 ✓"
+    else
+        log_info "正在安装 x11-repo..."
+        if pkg install x11-repo -y 2>&1 | tail -5; then
+            log_info "x11-repo 安装成功 ✓"
+        else
+            log_warn "x11-repo 安装失败，尝试继续..."
+        fi
+    fi
+
+    # 安装 tur-repo (Termux User Repository, 包含社区维护的 code-server 等包)
+    if pkg list-installed 2>/dev/null | grep -q "^tur-repo"; then
+        log_info "tur-repo 已安装 ✓"
+    else
+        log_info "正在安装 tur-repo..."
+        if pkg install tur-repo -y 2>&1 | tail -5; then
+            log_info "tur-repo 安装成功 ✓"
+        else
+            log_error "tur-repo 安装失败！code-server 位于此仓库中，无法继续安装。"
+            log_error "请检查: 1) 网络是否畅通  2) x11-repo 是否已正确配置"
+            exit 1
+        fi
+    fi
+
+    # 刷新包索引以加载 tur-repo 中的新包列表
+    log_info "正在刷新包索引以加载 tur-repo 仓库..."
+    pkg update -y 2>&1 | tail -5 || {
+        log_warn "包索引刷新遇到问题，但可能不影响后续安装。"
+    }
+    log_info "tur-repo 仓库源加载完成 ✓"
+}
+
+#===============================================================================
+# 步骤3: 安装基础依赖
 #===============================================================================
 step_install_deps() {
     log_step "正在安装 code-server 运行所需的基础依赖..."
 
     # 基础依赖说明:
     # - python:      运行 Web UI 管理控制台后端 (标准库 http.server)
-    # - nodejs:      提供系统 Node.js, 用于运行 code-server (替代预编译包中不兼容的 glibc 版本)
-    # - termux-api:  提供 termux-wake-lock 等 Termux API
-    # - wget:        下载 code-server Release 包
-    # - tar:         解压 .tar.gz
-    # - curl:        查询 GitHub API 获取最新版本号
-    local deps=(python nodejs termux-api wget tar curl)
+    # - termux-api:  提供 termux-wake-lock 等 Termux API，防止后台被杀
+    # 注意: nodejs 不需要单独安装，code-server 包会自动依赖安装所需的 Node.js 版本
+    local deps=(python termux-api)
 
     for dep in "${deps[@]}"; do
         log_info "  安装 ${dep}..."
@@ -81,145 +118,33 @@ step_install_deps() {
 }
 
 #===============================================================================
-# 步骤3: 部署 code-server (从 GitHub Release 下载预编译包)
+# 步骤4: 通过 pkg 安装 code-server
 #===============================================================================
 step_install_code_server() {
-    log_step "正在安装 code-server (GitHub Release 预编译包)..."
+    log_step "正在通过 pkg 安装 code-server (Termux 原生包)..."
 
-    # 如果已经安装过, 询问是否覆盖
+    # 如果已经安装过 code-server，给出提示
     if command -v code-server &>/dev/null; then
         log_warn "检测到已安装的 code-server: $(command -v code-server)"
-        log_warn "如需重新安装，请先运行 ./uninstall.sh 清理后再执行本脚本。"
-        log_info "跳过安装步骤。"
         code-server --version 2>&1 | head -3 || true
+        log_info "如需更新，请执行: pkg upgrade code-server -y"
+        log_info "如需重新安装，请先运行 ./uninstall.sh 清理后再执行本脚本。"
         return 0
     fi
 
-    # 确保 PREFIX 已设置 (部分非 Termux bash 环境下可能缺失)
-    local PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
-
-    #---------------------------------------------------------------------
-    # 3.1: 检测 CPU 架构
-    #---------------------------------------------------------------------
-    local arch
-    arch=$(uname -m)
-    local release_arch=""
-    case "${arch}" in
-        aarch64)
-            release_arch="arm64"
-            ;;
-        armv7l|armv8l)
-            # 部分 32 位 ARM 设备可能需要 arm 包; 尝试识别
-            release_arch="arm64"
-            log_warn "检测到 32 位 ARM (${arch}), 将尝试 arm64 包。"
-            log_warn "如果启动失败，请手动确认你的设备架构。"
-            ;;
-        x86_64)
-            release_arch="amd64"
-            ;;
-        *)
-            log_error "不支持的 CPU 架构: ${arch}"
-            log_error "支持: aarch64 (arm64), x86_64 (amd64)"
-            exit 1
-            ;;
-    esac
-    log_info "CPU 架构: ${arch} → Release 架构: ${release_arch}"
-
-    #---------------------------------------------------------------------
-    # 3.2: 获取 GitHub 最新版本号
-    #---------------------------------------------------------------------
-    log_info "正在查询 GitHub 最新 Release 版本..."
-    local latest_version
-    latest_version=$(curl -sSL "https://api.github.com/repos/coder/code-server/releases/latest" 2>/dev/null \
-        | grep '"tag_name"' \
-        | head -1 \
-        | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')
-
-    if [ -z "${latest_version}" ]; then
-        log_warn "无法通过 GitHub API 获取版本号，使用已知稳定版本 v4.117.0"
-        latest_version="v4.117.0"
-    fi
-    log_info "最新版本: ${latest_version}"
-
-    # 去掉前缀 'v' (如果存在) 用于构造下载 URL 中的文件名
-    # GitHub Release 文件名格式: code-server-4.117.0-linux-arm64.tar.gz
-    local version_no_v="${latest_version#v}"
-
-    #---------------------------------------------------------------------
-    # 3.3: 下载预编译包
-    #---------------------------------------------------------------------
-    local download_url="https://github.com/coder/code-server/releases/download/${latest_version}/code-server-${version_no_v}-linux-${release_arch}.tar.gz"
-    local tmp_file="${TMPDIR:-/tmp}/code-server-${version_no_v}-linux-${release_arch}.tar.gz"
-    local install_dir="${PREFIX}/opt/code-server"
-
-    log_info "下载地址: ${download_url}"
-    log_info "正在下载 (这可能需要几分钟, 取决于网络速度)..."
-
-    # 分离执行与判断, 避免 2>&1 吞噬错误信息
-    wget --show-progress -O "${tmp_file}" "${download_url}"
-    local wget_exit=$?
-    if [ ${wget_exit} -eq 0 ]; then
-        log_info "下载完成 ✓"
+    # 通过 pkg 安装 code-server (Termux 社区包，已适配 Android Bionic libc)
+    log_info "正在安装 code-server (这可能需要几分钟，取决于网络速度)..."
+    if pkg install code-server -y 2>&1 | tail -10; then
+        log_info "code-server 安装成功 ✓"
     else
-        log_error "下载失败! wget 退出码: ${wget_exit}"
-        log_error "URL: ${download_url}"
-        log_error "请检查: 1) 网络是否畅通  2) GitHub 是否可达"
-        log_error "你可以手动下载后解压到 ${install_dir}/ 并创建符号链接:"
-        log_error "  wget ${download_url}"
-        log_error "  tar -xzf code-server-*.tar.gz -C ${install_dir} --strip-components=1"
+        log_error "code-server 安装失败！"
+        log_error "请检查: 1) tur-repo 是否已正确加载  2) 网络是否畅通"
+        log_error "你可以手动尝试: pkg install code-server -y"
         exit 1
     fi
 
     #---------------------------------------------------------------------
-    # 3.4: 解压并安装
-    #---------------------------------------------------------------------
-    log_info "正在解压到 ${install_dir}..."
-
-    # 清理可能存在的旧安装
-    rm -rf "${install_dir}" 2>/dev/null || true
-    mkdir -p "${install_dir}"
-
-    # 解压 tarball (里面包含一个 code-server-*-linux-arm64/ 目录)
-    if tar -xzf "${tmp_file}" -C "${install_dir}" --strip-components=1; then
-        log_info "解压完成 ✓"
-    else
-        log_error "解压失败! tar 可能不支持该格式。"
-        rm -f "${tmp_file}"
-        exit 1
-    fi
-
-    # 清理临时文件
-    rm -f "${tmp_file}" 2>/dev/null || true
-
-    #---------------------------------------------------------------------
-    # 3.5: 适配 Termux 环境 (替换为系统 Node.js)
-    #---------------------------------------------------------------------
-    log_info "正在适配 Termux 环境（替换为系统 Node.js）..."
-
-    # code-server 预编译包自带一个为 glibc Linux 编译的 Node.js (lib/node),
-    # 在 Termux (Android Bionic libc) 下无法执行 (报错: exec: lib/node: not found).
-    # 解决方案: 删除此二进制, 修改启动脚本改用 Termux 系统安装的 node.
-    rm -f "${install_dir}/lib/node"
-
-    local cs_bin="${install_dir}/bin/code-server"
-    if [ -f "${cs_bin}" ]; then
-        # 将 exec "$script_dir/../lib/node" 替换为 exec node
-        sed -i 's|exec "$script_dir/../lib/node"|exec node|' "${cs_bin}"
-        log_info "启动脚本已适配系统 Node.js ✓"
-    else
-        log_error "未找到 ${cs_bin}，安装异常！"
-        exit 1
-    fi
-
-    #---------------------------------------------------------------------
-    # 3.6: 创建符号链接
-    #---------------------------------------------------------------------
-    log_info "正在创建符号链接到 ${PREFIX}/bin/code-server..."
-    ln -sf "${install_dir}/bin/code-server" "${PREFIX}/bin/code-server"
-    log_info "符号链接创建完成 ✓"
-
-    #---------------------------------------------------------------------
-    # 3.7: 验证安装
+    # 验证安装
     #---------------------------------------------------------------------
     log_step "验证 code-server 安装..."
     if command -v code-server &>/dev/null; then
@@ -230,13 +155,13 @@ step_install_code_server() {
         log_info "code-server 安装验证通过 ✓"
     else
         log_error "code-server 命令不可用，安装可能失败，请手动检查。"
-        log_error "尝试手动运行: ${install_dir}/bin/code-server --version"
+        log_error "尝试手动运行: code-server --version"
         exit 1
     fi
 }
 
 #===============================================================================
-# 步骤4: 生成配置文件
+# 步骤5: 生成配置文件
 #===============================================================================
 step_generate_config() {
     log_step "正在生成 code-server 配置文件..."
@@ -275,7 +200,7 @@ EOF
 }
 
 #===============================================================================
-# 步骤5: 保活 - 启用 Wake Lock
+# 步骤6: 保活 - 启用 Wake Lock
 #===============================================================================
 step_enable_wake_lock() {
     log_step "正在获取 Wake Lock 以防止 Android 系统杀死后台进程..."
@@ -290,7 +215,7 @@ step_enable_wake_lock() {
 }
 
 #===============================================================================
-# 步骤6: 安装后信息汇总
+# 步骤7: 安装后信息汇总
 #===============================================================================
 print_summary() {
     local device_ip
@@ -324,12 +249,13 @@ main() {
     echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
     echo -e "${CYAN}║   Termux code-server 一键安装脚本                      ║${NC}"
-    echo -e "${CYAN}║   版本: 1.0.0                                         ║${NC}"
+    echo -e "${CYAN}║   版本: 2.0.0 (pkg install 模式)                      ║${NC}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
 
     check_termux
     step_update_pkg
+    step_install_tur_repo
     step_install_deps
     step_install_code_server
     step_generate_config

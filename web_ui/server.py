@@ -5,6 +5,7 @@
   server.py — Termux code-server Web 管理控制台后端
   基于 Python3 标准库 http.server, 零外部依赖
   功能: 启动/停止/状态查询 code-server 进程
+  依赖: code-server 需通过 pkg install code-server 安装 (运行 install.sh 完成)
 ===============================================================================
 """
 
@@ -266,7 +267,7 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
             remove_pid_file()
             self.send_json_response({
                 "success": False,
-                "message": "未找到 code-server 命令，请先运行 install.sh 安装。",
+                "message": "未找到 code-server 命令，请先运行 install.sh 安装 (将执行 pkg install code-server)。",
             }, 500)
         except Exception as e:
             remove_pid_file()
@@ -361,6 +362,7 @@ def main():
     print("╔══════════════════════════════════════════════════════════╗")
     print("║   Termux code-server Web 管理控制台                    ║")
     print("║   Python3 极简后端, 零外部依赖                        ║")
+    print("║   安装: pkg install tur-repo && pkg install code-server ║")
     print("╠══════════════════════════════════════════════════════════╣")
     print(f"║   本地访问: http://localhost:{PORT}                 ║")
     if local_ip != "127.0.0.1":
