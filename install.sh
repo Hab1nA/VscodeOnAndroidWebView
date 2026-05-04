@@ -179,7 +179,7 @@ step_install_code_server() {
     mkdir -p "${install_dir}"
 
     # 解压 tarball (里面包含一个 code-server-*-linux-arm64/ 目录)
-    if tar -xzf "${tmp_file}" -C "${install_dir}" --strip-components=1 2>&1; then
+    if tar -xzf "${tmp_file}" -C "${install_dir}" --strip-components=1; then
         log_info "解压完成 ✓"
     else
         log_error "解压失败! tar 可能不支持该格式。"
@@ -260,10 +260,7 @@ step_enable_wake_lock() {
     log_step "正在获取 Wake Lock 以防止 Android 系统杀死后台进程..."
 
     if command -v termux-wake-lock &>/dev/null; then
-        termux-wake-lock "${0}" 2>/dev/null || {
-            # 某些版本的 termux-api 接受不同参数
-            termux-wake-lock 2>/dev/null || log_warn "Wake Lock 获取失败，可能影响后台运行稳定性。"
-        }
+        termux-wake-lock 2>/dev/null || log_warn "Wake Lock 获取失败，可能影响后台运行稳定性。"
         log_info "Wake Lock 已启用 ✓"
     else
         log_warn "termux-api 未正确安装，Wake Lock 不可用。"
@@ -276,7 +273,7 @@ step_enable_wake_lock() {
 #===============================================================================
 print_summary() {
     local device_ip
-    device_ip=$(ifconfig 2>/dev/null | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -1 || echo "未知")
+    device_ip=$(ip addr show 2>/dev/null | grep -Eo 'inet ([0-9]+\.){3}[0-9]+' | grep -v '127.0.0.1' | awk '{print $2}' | head -1 || echo "未知")
 
     echo ""
     echo -e "${GREEN}╔══════════════════════════════════════════════════════════╗${NC}"

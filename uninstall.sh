@@ -22,6 +22,17 @@ log_error() { echo -e "${RED}[ERROR]${NC} $*"; }
 log_step()  { echo -e "${CYAN}==>${NC} $*"; }
 
 #===============================================================================
+# 环境检测
+#===============================================================================
+check_termux() {
+    if [ -z "${TERMUX_VERSION:-}" ] && [ ! -d "/data/data/com.termux/files/usr" ]; then
+        log_error "此脚本必须在 Termux 环境中运行！"
+        exit 1
+    fi
+    log_info "Termux 环境检测通过 ✓"
+}
+
+#===============================================================================
 # 确认操作
 #===============================================================================
 confirm_uninstall() {
@@ -58,8 +69,8 @@ step_stop_code_server() {
         rm -f "${pid_file}"
     fi
 
-    # 方式2: 杀死所有可能的残留进程
-    pkill -f "code-server" 2>/dev/null && log_info "已终止残留的 code-server 进程 ✓" || true
+    # 方式2: 精确匹配进程名，清理可能的残留进程
+    pkill -x "code-server" 2>/dev/null && log_info "已终止残留的 code-server 进程 ✓" || true
     sleep 1
 
     log_info "code-server 进程检查完成 ✓"
@@ -129,7 +140,7 @@ step_clean_project() {
 
     read -r -p "确认删除项目目录？(yes/no) [no]: " confirm_dir
     if [ "${confirm_dir}" = "yes" ]; then
-        cd "$HOME"  # 先切换到 HOME 再删除
+        cd "$HOME" 2>/dev/null || cd / || true  # 先切换到安全目录再删除
         rm -rf "${project_dir}"
         log_info "项目目录已删除 ✓"
     else
@@ -148,6 +159,7 @@ main() {
     echo -e "${RED}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
 
+    check_termux
     confirm_uninstall
     step_stop_code_server
     step_uninstall_code_server

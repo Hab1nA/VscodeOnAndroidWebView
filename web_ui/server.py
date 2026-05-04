@@ -17,7 +17,7 @@ import subprocess
 import sys
 import threading
 import time
-from pathlib import Path
+from http.server import ThreadingHTTPServer
 
 #===============================================================================
 # 配置常量
@@ -179,6 +179,7 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
             })
             return
 
+        proc = None
         try:
             # 后台启动 code-server
             log_file = os.path.expanduser("~/.config/code-server/code-server.log")
@@ -228,8 +229,9 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
                 else:
                     # 进程仍在运行但端口未监听（尝试强制终止）
                     try:
-                        os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-                    except Exception:
+                        pgid = os.getpgid(proc.pid)
+                        os.killpg(pgid, signal.SIGTERM)
+                    except (ProcessLookupError, OSError, PermissionError):
                         pass
                     err_msg += "端口 8080 在 10 秒内未开始监听。"
 
@@ -261,12 +263,22 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
             })
 
         except FileNotFoundError:
+            remove_pid_file()
             self.send_json_response({
                 "success": False,
                 "message": "未找到 code-server 命令，请先运行 install.sh 安装。",
             }, 500)
         except Exception as e:
             remove_pid_file()
+            # 清理可能已启动但 PID 未正确记录的残留进程
+            try:
+                if proc is not None and proc.poll() is None:
+                    pgid = os.getpgid(proc.pid)
+                    os.killpg(pgid, signal.SIGTERM)
+                    time.sleep(0.5)
+                    os.killpg(pgid, signal.SIGKILL)
+            except (ProcessLookupError, OSError, PermissionError, Exception):
+                pass
             self.send_json_response({
                 "success": False,
                 "message": f"启动失败: {str(e)}",
@@ -305,13 +317,29 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
         finally:
             remove_pid_file()
 
-        # 兜底: 用 pkill 清理残留
+        # 兜底: 用 pkill 精确匹配清理残留进程
         try:
             subprocess.run(
-                ["pkill", "-f", "code-server"],
+                ["pkill", "-x", "code-server"],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
+        except FileNotFoundError:
+            # pkill 不可用时的 fallback: 手动遍历进程
+            try:
+                import glob
+                for _pid_file in glob.glob("/proc/*/cmdline"):
+                    try:
+                        with open(_pid_file, "rb") as _f:
+                            _cmd = _f.read().replace(b"\0", b" ").decode("utf-8", errors="replace")
+                            if "code-server" in _cmd:
+                                _p = os.path.basename(os.path.dirname(_pid_file))
+                                if _p.isdigit():
+                                    os.kill(int(_p), signal.SIGKILL)
+                    except (OSError, ValueError, ProcessLookupError):
+                        pass
+            except Exception:
+                pass
         except Exception:
             pass
 
@@ -342,7 +370,7 @@ def main():
     print("按 Ctrl+C 停止 Web 管理服务 (不会影响 code-server 运行)")
     print("")
 
-    server = http.server.HTTPServer((HOST, PORT), APIHandler)
+    server = ThreadingHTTPServer((HOST, PORT), APIHandler)
 
     try:
         server.serve_forever()

@@ -342,7 +342,7 @@
                     pollStatus();
                 })
                 .catch(err => {
-                    showToast('请求失败: ' + err, 'error');
+                    showToast('请求失败: ' + (err.message || String(err)), 'error');
                     pollStatus();
                 });
         }
@@ -363,7 +363,7 @@
                     pollStatus();
                 })
                 .catch(err => {
-                    showToast('请求失败: ' + err, 'error');
+                    showToast('请求失败: ' + (err.message || String(err)), 'error');
                     pollStatus();
                 });
         }

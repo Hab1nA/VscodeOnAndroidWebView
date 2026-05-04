@@ -23,7 +23,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVER_SCRIPT="${SCRIPT_DIR}/web_ui/server.py"
 
 #===============================================================================
-# 步骤1: 环境检查
+# 步骤1: Termux 环境检测
+#===============================================================================
+check_termux() {
+    if [ -z "${TERMUX_VERSION:-}" ] && [ ! -d "/data/data/com.termux/files/usr" ]; then
+        echo -e "${RED}[ERROR]${NC} 此脚本必须在 Termux 环境中运行！"
+        exit 1
+    fi
+    echo -e "${GREEN}[INFO]${NC} Termux 环境检测通过 ✓"
+}
+
+#===============================================================================
+# 步骤2: 运行环境检查
 #===============================================================================
 check_environment() {
     echo -e "${CYAN}==>${NC} 检查运行环境..."
@@ -80,10 +91,13 @@ enable_wake_lock() {
 #===============================================================================
 get_device_ip() {
     local ip=""
-    # 使用多种方式尝试获取 IP
-    ip=$(ifconfig 2>/dev/null | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -1)
+    # 优先使用 ip 命令 (现代 Linux 标准), 回退到 ifconfig
+    ip=$(ip addr show 2>/dev/null | grep -Eo 'inet ([0-9]+\.){3}[0-9]+' | grep -v '127.0.0.1' | awk '{print $2}' | head -1)
     if [ -z "${ip}" ]; then
-        ip="未知, 请在 Termux 中运行 ifconfig 查看"
+        ip=$(ifconfig 2>/dev/null | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -1)
+    fi
+    if [ -z "${ip}" ]; then
+        ip="未知, 请在 Termux 中运行 ip addr 查看"
     fi
     echo "${ip}"
 }
@@ -125,6 +139,7 @@ start_server() {
 # 主函数
 #===============================================================================
 main() {
+    check_termux
     check_environment
     enable_wake_lock
     start_server
