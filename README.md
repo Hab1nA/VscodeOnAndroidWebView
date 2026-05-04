@@ -84,16 +84,24 @@ http://localhost:9090
 
 ## ⚙️ 配置说明
 
-### 修改 VS Code 密码
+### 查看 / 修改 VS Code 密码
 
-编辑 `~/.config/code-server/config.yaml`：
+`install.sh` 在首次安装时会随机生成一个密码并写入配置文件。运行以下命令可查看当前密码：
+
+```bash
+grep password ~/.config/code-server/config.yaml
+```
+
+如需修改，直接编辑该文件：
 
 ```yaml
-bind-addr: 127.0.0.1:8080
+bind-addr: 0.0.0.0:8080
 auth: password
 password: 你的新密码
 cert: false
 ```
+
+修改后重启 code-server（在控制面板停止再启动）即可生效。
 
 ### 端口说明
 
@@ -109,7 +117,7 @@ cert: false
 ## 💡 使用技巧
 
 - **防止后台被杀**：在 Android 设置 → 电池优化 → 找到 Termux → 选择"不限制"。
-- **局域网访问**：将 `server.py` 中 `CODE_SERVER_CMD` 启动参数的 `127.0.0.1` 改为 `0.0.0.0`，即可从同一 Wi-Fi 内的其他设备访问（默认已配置为 `0.0.0.0`）。
+- **局域网访问**：code-server 和控制面板默认均绑定 `0.0.0.0`，同一 Wi-Fi 下的其他设备可直接访问。若要限制为本机访问，将 `~/.config/code-server/config.yaml` 中的 `bind-addr` 改为 `127.0.0.1:8080`，并在 `server.py` 的 `Popen` 调用中同步修改 `--bind-addr` 参数。
 - **LaTeX 编译**：在 VS Code 中安装 `LaTeX Workshop` 插件，配合已安装的 `texlive` 即可直接编译 `.tex` 文件。
 - **Python 虚拟环境**：建议在项目目录下使用 `python -m venv .venv` 创建独立虚拟环境。
 

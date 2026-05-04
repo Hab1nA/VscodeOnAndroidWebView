@@ -5,7 +5,7 @@
 # 支持：Python 开发、HTML/前端开发、LaTeX 写作
 # =============================================================================
 
-set -e  # 遇到错误立即退出
+set -eo pipefail  # 遇到错误立即退出；管道中任一命令失败也触发退出
 
 # ---------- 颜色定义 ----------
 RED='\033[0;31m'
@@ -57,29 +57,29 @@ log_success "镜像源已更新为清华大学镜像"
 # ---------- 2. 系统更新 ----------
 log_step "步骤 2/7：更新软件包列表并升级系统"
 log_info "正在更新软件包列表..."
-pkg update -y 2>&1 | tail -5
+pkg update -y
 log_info "正在升级已安装软件包（可能需要几分钟）..."
-pkg upgrade -y 2>&1 | tail -5
+pkg upgrade -y
 log_success "系统更新完成"
 
 # ---------- 3. 安装核心工具 ----------
 log_step "步骤 3/7：安装核心工具"
 log_info "正在安装 curl、wget、git、openssh..."
-pkg install -y curl wget git openssh 2>&1 | tail -3
+pkg install -y curl wget git openssh
 log_success "核心工具安装完成：curl / wget / git / openssh"
 
 # ---------- 4. 安装开发环境 ----------
 log_step "步骤 4/7：安装开发运行环境"
 
 log_info "正在安装 Python..."
-pkg install -y python 2>&1 | tail -3
+pkg install -y python
 # 升级 pip 并安装常用 Python 包
 pip install --upgrade pip -q
-pip install flask requests 2>&1 | tail -3
+pip install flask requests
 log_success "Python 及 Flask 安装完成"
 
 log_info "正在安装 Node.js（code-server 依赖）..."
-pkg install -y nodejs 2>&1 | tail -3
+pkg install -y nodejs
 log_success "Node.js 安装完成：$(node --version)"
 
 # ---------- 5. 安装 code-server ----------
@@ -87,7 +87,7 @@ log_step "步骤 5/7：安装 code-server（VS Code Web 版）"
 log_info "正在通过 npm 安装 code-server（这可能需要 5-15 分钟，请耐心等待）..."
 log_warn "安装期间请保持网络连接，不要关闭 Termux"
 
-npm install -g code-server 2>&1 | tail -5
+npm install -g code-server
 
 if command -v code-server &>/dev/null; then
     log_success "code-server 安装成功：$(code-server --version | head -1)"
@@ -98,8 +98,8 @@ else
     log_success "code-server 安装完成（备用方式）"
 fi
 
-# 设置 code-server 默认密码（可修改）
-VSCODE_PASSWORD="vscode123"
+# 生成随机密码（16 位字母数字），避免使用公开的默认凭据
+VSCODE_PASSWORD="$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 16)"
 mkdir -p ~/.config/code-server
 cat > ~/.config/code-server/config.yaml << EOF
 bind-addr: 0.0.0.0:8080
@@ -114,7 +114,7 @@ log_info "  默认密码：${YELLOW}${VSCODE_PASSWORD}${NC}（可在 ~/.config/c
 log_step "步骤 6/7：安装 TeXLive（LaTeX 编译环境）"
 log_warn "TeXLive 安装体积较大，可能需要 10-30 分钟，请耐心等待..."
 log_info "正在安装 texlive..."
-pkg install -y texlive 2>&1 | tail -5
+pkg install -y texlive
 log_success "TeXLive 安装完成"
 
 # ---------- 7. 启用唤醒锁 & 收尾 ----------

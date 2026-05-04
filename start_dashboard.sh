@@ -39,8 +39,14 @@ if ! $PYTHON_CMD -c "import flask" &>/dev/null; then
 fi
 
 # ---------- 检查是否已有控制面板在运行 ----------
-if lsof -iTCP:${DASHBOARD_PORT} -sTCP:LISTEN &>/dev/null 2>&1 || \
-   nc -z 127.0.0.1 ${DASHBOARD_PORT} 2>/dev/null; then
+# 使用 Python 探测端口，避免依赖 lsof 或 nc（install.sh 不安装这些工具）
+if $PYTHON_CMD - <<EOF
+import socket, sys
+s = socket.socket()
+s.settimeout(0.5)
+sys.exit(0 if s.connect_ex(('127.0.0.1', ${DASHBOARD_PORT})) == 0 else 1)
+EOF
+then
     echo -e "${GREEN}[INFO]${NC}  控制面板已在运行，访问 http://localhost:${DASHBOARD_PORT}"
     echo -e "${GREEN}[INFO]${NC}  VS Code 地址：http://localhost:${CODE_SERVER_PORT}"
     exit 0
