@@ -94,6 +94,9 @@ step_install_code_server() {
         return 0
     fi
 
+    # 确保 PREFIX 已设置 (部分非 Termux bash 环境下可能缺失)
+    local PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
+
     #---------------------------------------------------------------------
     # 3.1: 检测 CPU 架构
     #---------------------------------------------------------------------
@@ -145,18 +148,24 @@ step_install_code_server() {
     # 3.3: 下载预编译包
     #---------------------------------------------------------------------
     local download_url="https://github.com/coder/code-server/releases/download/${latest_version}/code-server-${version_no_v}-linux-${release_arch}.tar.gz"
-    local tmp_file="/tmp/code-server-${version_no_v}-linux-${release_arch}.tar.gz"
+    local tmp_file="${TMPDIR:-/tmp}/code-server-${version_no_v}-linux-${release_arch}.tar.gz"
     local install_dir="${PREFIX}/opt/code-server"
 
     log_info "下载地址: ${download_url}"
     log_info "正在下载 (这可能需要几分钟, 取决于网络速度)..."
 
-    if wget -q --show-progress -O "${tmp_file}" "${download_url}" 2>&1; then
+    # 分离执行与判断, 避免 2>&1 吞噬错误信息
+    wget --show-progress -O "${tmp_file}" "${download_url}"
+    local wget_exit=$?
+    if [ ${wget_exit} -eq 0 ]; then
         log_info "下载完成 ✓"
     else
-        log_error "下载失败! 请检查网络连接或手动下载。"
+        log_error "下载失败! wget 退出码: ${wget_exit}"
         log_error "URL: ${download_url}"
-        log_error "你可以手动下载后解压到 ${install_dir}/ 并创建符号链接。"
+        log_error "请检查: 1) 网络是否畅通  2) GitHub 是否可达"
+        log_error "你可以手动下载后解压到 ${install_dir}/ 并创建符号链接:"
+        log_error "  wget ${download_url}"
+        log_error "  tar -xzf code-server-*.tar.gz -C ${install_dir} --strip-components=1"
         exit 1
     fi
 
@@ -179,7 +188,7 @@ step_install_code_server() {
     fi
 
     # 清理临时文件
-    rm -f "${tmp_file}"
+    rm -f "${tmp_file}" 2>/dev/null || true
 
     #---------------------------------------------------------------------
     # 3.5: 创建符号链接

@@ -87,7 +87,7 @@ step_uninstall_code_server() {
     fi
 
     # 清理可能遗留的临时下载文件
-    rm -f /tmp/code-server-*.tar.gz 2>/dev/null || true
+    rm -f "${TMPDIR:-/tmp}/code-server-*.tar.gz" 2>/dev/null || true
 
     log_info "code-server 可执行文件清理完成 ✓"
 }
