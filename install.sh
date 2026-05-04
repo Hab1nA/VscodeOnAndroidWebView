@@ -60,11 +60,12 @@ step_install_deps() {
 
     # 基础依赖说明:
     # - python:      运行 Web UI 管理控制台后端 (标准库 http.server)
+    # - nodejs:      提供系统 Node.js, 用于运行 code-server (替代预编译包中不兼容的 glibc 版本)
     # - termux-api:  提供 termux-wake-lock 等 Termux API
     # - wget:        下载 code-server Release 包
     # - tar:         解压 .tar.gz
     # - curl:        查询 GitHub API 获取最新版本号
-    local deps=(python termux-api wget tar curl)
+    local deps=(python nodejs termux-api wget tar curl)
 
     for dep in "${deps[@]}"; do
         log_info "  安装 ${dep}..."
@@ -191,14 +192,34 @@ step_install_code_server() {
     rm -f "${tmp_file}" 2>/dev/null || true
 
     #---------------------------------------------------------------------
-    # 3.5: 创建符号链接
+    # 3.5: 适配 Termux 环境 (替换为系统 Node.js)
+    #---------------------------------------------------------------------
+    log_info "正在适配 Termux 环境（替换为系统 Node.js）..."
+
+    # code-server 预编译包自带一个为 glibc Linux 编译的 Node.js (lib/node),
+    # 在 Termux (Android Bionic libc) 下无法执行 (报错: exec: lib/node: not found).
+    # 解决方案: 删除此二进制, 修改启动脚本改用 Termux 系统安装的 node.
+    rm -f "${install_dir}/lib/node"
+
+    local cs_bin="${install_dir}/bin/code-server"
+    if [ -f "${cs_bin}" ]; then
+        # 将 exec "$script_dir/../lib/node" 替换为 exec node
+        sed -i 's|exec "$script_dir/../lib/node"|exec node|' "${cs_bin}"
+        log_info "启动脚本已适配系统 Node.js ✓"
+    else
+        log_error "未找到 ${cs_bin}，安装异常！"
+        exit 1
+    fi
+
+    #---------------------------------------------------------------------
+    # 3.6: 创建符号链接
     #---------------------------------------------------------------------
     log_info "正在创建符号链接到 ${PREFIX}/bin/code-server..."
     ln -sf "${install_dir}/bin/code-server" "${PREFIX}/bin/code-server"
     log_info "符号链接创建完成 ✓"
 
     #---------------------------------------------------------------------
-    # 3.6: 验证安装
+    # 3.7: 验证安装
     #---------------------------------------------------------------------
     log_step "验证 code-server 安装..."
     if command -v code-server &>/dev/null; then
