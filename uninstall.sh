@@ -69,26 +69,27 @@ step_stop_code_server() {
 # 步骤2: 卸载 code-server 可执行文件 (仅清理安装时部署的部分)
 #===============================================================================
 step_uninstall_code_server() {
-    log_step "正在卸载 code-server..."
+    log_step "正在卸载 code-server (GitHub Release 安装)..."
 
-    # 检查是否通过 npm 全局安装的
-    if command -v code-server &>/dev/null; then
-        local cs_path
-        cs_path=$(command -v code-server)
-
-        # 判断是否由 npm/yarn 安装
-        if echo "${cs_path}" | grep -qE "(node_modules|npm|yarn)"; then
-            log_info "检测到 npm/yarn 安装的 code-server，正在卸载..."
-            npm uninstall -g code-server 2>&1 | tail -5 || log_warn "npm 卸载 code-server 遇到问题"
-            log_info "npm 卸载 code-server 完成 ✓"
-        else
-            # pkg 安装的, 按用户要求不卸载系统包, 但清理相关文件
-            log_warn "code-server 由 pkg 安装, 按策略不执行 pkg uninstall。"
-            log_warn "如需移除系统包, 请手动执行: pkg uninstall code-server"
-        fi
-    else
-        log_info "未检测到 code-server 命令，可能已被卸载。"
+    # 移除符号链接
+    if [ -L "${PREFIX}/bin/code-server" ]; then
+        rm -f "${PREFIX}/bin/code-server"
+        log_info "已删除符号链接: ${PREFIX}/bin/code-server ✓"
+    elif [ -f "${PREFIX}/bin/code-server" ]; then
+        rm -f "${PREFIX}/bin/code-server"
+        log_info "已删除文件: ${PREFIX}/bin/code-server ✓"
     fi
+
+    # 移除安装目录
+    if [ -d "${PREFIX}/opt/code-server" ]; then
+        rm -rf "${PREFIX}/opt/code-server"
+        log_info "已删除安装目录: ${PREFIX}/opt/code-server ✓"
+    fi
+
+    # 清理可能遗留的临时下载文件
+    rm -f /tmp/code-server-*.tar.gz 2>/dev/null || true
+
+    log_info "code-server 可执行文件清理完成 ✓"
 }
 
 #===============================================================================
@@ -101,8 +102,6 @@ step_clean_config() {
         "$HOME/.config/code-server"
         "$HOME/.local/share/code-server"
         "$HOME/.cache/code-server"
-        # npm 全局 node_modules 中可能残留的 code-server
-        "$HOME/.npm/_npx"
     )
 
     for dir in "${dirs_to_clean[@]}"; do

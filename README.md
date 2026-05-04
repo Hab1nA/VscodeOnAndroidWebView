@@ -45,11 +45,14 @@ chmod +x install.sh uninstall.sh start_web_ui.sh
 
 该脚本将自动完成以下操作：
 1. 更新 Termux 包管理器
-2. 安装基础依赖（Node.js、Python、termux-api 等）
-3. 部署 code-server
+2. 安装基础依赖（Python、termux-api、wget、tar 等）
+3. 从 GitHub Release 下载 code-server 预编译包并部署
 4. 生成配置文件及随机密码
 5. 启用 Wake Lock 防止后台被杀
 
+> 安装过程中，脚本会自动检测 CPU 架构（ARM64/AMD64），从 GitHub 下载匹配的 code-server 预编译包。
+> 无需 Node.js 或 npm！code-server 使用官方预编译二进制包，开箱即用。
+>
 > 安装完成后，**请务必记下终端中显示的登录密码！**
 
 ### 第四步：启动 Web 管理控制台
@@ -85,7 +88,7 @@ chmod +x install.sh uninstall.sh start_web_ui.sh
 | 启动 Web 管理台 | `./start_web_ui.sh` |
 | 手动启动 code-server | `code-server` |
 | 查找密码 | `cat ~/.config/code-server/config.yaml` |
-| 查看日志 | `cat ~/.config/code-server/code-server.log` |
+| 查看日志 | `cat ~/.local/share/code-server/code-server.log` |
 | 安全卸载 | `./uninstall.sh` |
 | 释放 Wake Lock | `termux-wake-unlock` |
 
@@ -102,8 +105,11 @@ chmod +x install.sh uninstall.sh start_web_ui.sh
 
 ## 常见问题
 
-### Q: 安装时出现 "未找到 code-server" 错误？
-A: Termux 官方仓库的 code-server 包偶尔会更新，如果 `pkg install` 失败，脚本会自动回退到 `npm install -g code-server`。确保网络顺畅即可。
+### Q: 安装时下载 code-server 失败？
+A: 脚本会从 GitHub 下载预编译包。如果下载失败，请检查：
+1. 网络是否能正常访问 GitHub
+2. 可手动下载：访问 https://github.com/coder/code-server/releases
+3. 手动解压到 `${PREFIX}/opt/code-server/` 并创建符号链接
 
 ### Q: 浏览器打不开管理页面？
 A: 请确认：
@@ -124,23 +130,20 @@ cat ~/.config/code-server/config.yaml | grep password
 ```
 
 ### Q: 如何更新 code-server？
-A: 如果是通过 pkg 安装的：
+A: 重新运行安装脚本即可自动下载最新版本：
 ```bash
-pkg upgrade code-server
-```
-如果是通过 npm 安装的：
-```bash
-npm update -g code-server
+./uninstall.sh   # 先卸载旧版本（选择 yes）
+./install.sh     # 重新安装最新版
 ```
 
-### Q: 卸载脚本会删除我的 Node.js 和 Python 吗？
-A: **不会。** `uninstall.sh` 仅清理 code-server 相关的配置文件、数据目录和本项目文件，**绝不会**卸载任何系统级依赖包。
+### Q: 卸载脚本会删除我的 Python 和其他系统包吗？
+A: **不会。** `uninstall.sh` 仅清理 code-server 相关的配置文件、数据目录、预编译包安装目录和本项目文件，**绝不会**卸载任何系统级依赖包（python、termux-api 等）。
 
 ---
 
 ## 技术栈
 
-- **运行时**: Node.js (code-server 基础)
+- **code-server**: 官方 GitHub Release 预编译二进制包（ARM64/AMD64）
 - **后端**: Python3 标准库 `http.server`（零外部依赖）
 - **前端**: 纯 HTML/CSS/JS（无框架，极简设计）
 - **进程管理**: Shell 脚本 + PID 文件

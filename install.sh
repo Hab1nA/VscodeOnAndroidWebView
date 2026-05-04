@@ -59,12 +59,12 @@ step_install_deps() {
     log_step "正在安装 code-server 运行所需的基础依赖..."
 
     # 基础依赖说明:
-    # - nodejs-lts:  提供 Node.js 运行时和 npm (code-server 基于 Node.js)
     # - python:      运行 Web UI 管理控制台后端 (标准库 http.server)
     # - termux-api:  提供 termux-wake-lock 等 Termux API
-    # - git:         可选, 便于后续扩展
-    # - curl:        用于下载和网络请求
-    local deps=(nodejs-lts python termux-api git curl)
+    # - wget:        下载 code-server Release 包
+    # - tar:         解压 .tar.gz
+    # - curl:        查询 GitHub API 获取最新版本号
+    local deps=(python termux-api wget tar curl)
 
     for dep in "${deps[@]}"; do
         log_info "  安装 ${dep}..."
@@ -80,26 +80,117 @@ step_install_deps() {
 }
 
 #===============================================================================
-# 步骤3: 部署 code-server
+# 步骤3: 部署 code-server (从 GitHub Release 下载预编译包)
 #===============================================================================
 step_install_code_server() {
-    log_step "正在安装 code-server..."
+    log_step "正在安装 code-server (GitHub Release 预编译包)..."
 
-    # 优先尝试 Termux 官方仓库的 code-server
-    if pkg list-installed 2>/dev/null | grep -q "^code-server"; then
-        log_info "code-server 已通过 pkg 安装，跳过安装步骤。"
-    elif pkg install code-server -y 2>&1; then
-        log_info "通过 pkg 安装 code-server 成功 ✓"
-    else
-        log_warn "pkg 仓库中未找到 code-server，改用 npm 全局安装..."
-        npm install -g code-server 2>&1 | tail -10 || {
-            log_error "npm 安装 code-server 失败！请检查网络环境。"
-            exit 1
-        }
-        log_info "通过 npm 安装 code-server 成功 ✓"
+    # 如果已经安装过, 询问是否覆盖
+    if command -v code-server &>/dev/null; then
+        log_warn "检测到已安装的 code-server: $(command -v code-server)"
+        log_warn "如需重新安装，请先运行 ./uninstall.sh 清理后再执行本脚本。"
+        log_info "跳过安装步骤。"
+        code-server --version 2>&1 | head -3 || true
+        return 0
     fi
 
-    # 验证安装
+    #---------------------------------------------------------------------
+    # 3.1: 检测 CPU 架构
+    #---------------------------------------------------------------------
+    local arch
+    arch=$(uname -m)
+    local release_arch=""
+    case "${arch}" in
+        aarch64)
+            release_arch="arm64"
+            ;;
+        armv7l|armv8l)
+            # 部分 32 位 ARM 设备可能需要 arm 包; 尝试识别
+            release_arch="arm64"
+            log_warn "检测到 32 位 ARM (${arch}), 将尝试 arm64 包。"
+            log_warn "如果启动失败，请手动确认你的设备架构。"
+            ;;
+        x86_64)
+            release_arch="amd64"
+            ;;
+        *)
+            log_error "不支持的 CPU 架构: ${arch}"
+            log_error "支持: aarch64 (arm64), x86_64 (amd64)"
+            exit 1
+            ;;
+    esac
+    log_info "CPU 架构: ${arch} → Release 架构: ${release_arch}"
+
+    #---------------------------------------------------------------------
+    # 3.2: 获取 GitHub 最新版本号
+    #---------------------------------------------------------------------
+    log_info "正在查询 GitHub 最新 Release 版本..."
+    local latest_version
+    latest_version=$(curl -sSL "https://api.github.com/repos/coder/code-server/releases/latest" 2>/dev/null \
+        | grep '"tag_name"' \
+        | head -1 \
+        | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')
+
+    if [ -z "${latest_version}" ]; then
+        log_warn "无法通过 GitHub API 获取版本号，使用已知稳定版本 v4.117.0"
+        latest_version="v4.117.0"
+    fi
+    log_info "最新版本: ${latest_version}"
+
+    # 去掉前缀 'v' (如果存在) 用于构造下载 URL 中的文件名
+    # GitHub Release 文件名格式: code-server-4.117.0-linux-arm64.tar.gz
+    local version_no_v="${latest_version#v}"
+
+    #---------------------------------------------------------------------
+    # 3.3: 下载预编译包
+    #---------------------------------------------------------------------
+    local download_url="https://github.com/coder/code-server/releases/download/${latest_version}/code-server-${version_no_v}-linux-${release_arch}.tar.gz"
+    local tmp_file="/tmp/code-server-${version_no_v}-linux-${release_arch}.tar.gz"
+    local install_dir="${PREFIX}/opt/code-server"
+
+    log_info "下载地址: ${download_url}"
+    log_info "正在下载 (这可能需要几分钟, 取决于网络速度)..."
+
+    if wget -q --show-progress -O "${tmp_file}" "${download_url}" 2>&1; then
+        log_info "下载完成 ✓"
+    else
+        log_error "下载失败! 请检查网络连接或手动下载。"
+        log_error "URL: ${download_url}"
+        log_error "你可以手动下载后解压到 ${install_dir}/ 并创建符号链接。"
+        exit 1
+    fi
+
+    #---------------------------------------------------------------------
+    # 3.4: 解压并安装
+    #---------------------------------------------------------------------
+    log_info "正在解压到 ${install_dir}..."
+
+    # 清理可能存在的旧安装
+    rm -rf "${install_dir}" 2>/dev/null || true
+    mkdir -p "${install_dir}"
+
+    # 解压 tarball (里面包含一个 code-server-*-linux-arm64/ 目录)
+    if tar -xzf "${tmp_file}" -C "${install_dir}" --strip-components=1 2>&1; then
+        log_info "解压完成 ✓"
+    else
+        log_error "解压失败! tar 可能不支持该格式。"
+        rm -f "${tmp_file}"
+        exit 1
+    fi
+
+    # 清理临时文件
+    rm -f "${tmp_file}"
+
+    #---------------------------------------------------------------------
+    # 3.5: 创建符号链接
+    #---------------------------------------------------------------------
+    log_info "正在创建符号链接到 ${PREFIX}/bin/code-server..."
+    ln -sf "${install_dir}/bin/code-server" "${PREFIX}/bin/code-server"
+    log_info "符号链接创建完成 ✓"
+
+    #---------------------------------------------------------------------
+    # 3.6: 验证安装
+    #---------------------------------------------------------------------
     log_step "验证 code-server 安装..."
     if command -v code-server &>/dev/null; then
         local cs_path
@@ -109,6 +200,7 @@ step_install_code_server() {
         log_info "code-server 安装验证通过 ✓"
     else
         log_error "code-server 命令不可用，安装可能失败，请手动检查。"
+        log_error "尝试手动运行: ${install_dir}/bin/code-server --version"
         exit 1
     fi
 }
