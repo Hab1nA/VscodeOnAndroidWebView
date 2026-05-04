@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>code-server 控制台</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        margin: 2rem;
+        color: #1d1d1f;
+        background: #f7f7f9;
+      }
+      .card {
+        max-width: 520px;
+        padding: 1.5rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin-top: 0;
+      }
+      .status {
+        margin: 0.5rem 0 1rem;
+        font-weight: 600;
+      }
+      button {
+        border: 0;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-right: 0.5rem;
+        cursor: pointer;
+      }
+      .primary {
+        background: #2f6fed;
+        color: #fff;
+      }
+      .danger {
+        background: #e5484d;
+        color: #fff;
+      }
+      .link {
+        display: inline-block;
+        margin-top: 1rem;
+        color: #2f6fed;
+        text-decoration: none;
+      }
+      .log {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: #4b4b4b;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>code-server 控制台</h1>
+      <div id="status" class="status">状态：检测中...</div>
+      <button class="primary" onclick="startServer()">启动 VS Code</button>
+      <button class="danger" onclick="stopServer()">停止 VS Code</button>
+      <div class="log" id="bindAddr"></div>
+      <div class="log" id="logFile"></div>
+      <a id="openLink" class="link" href="#" target="_blank" rel="noopener">打开 VS Code</a>
+    </div>
+
+    <script>
+      async function request(path, options = {}) {
+        const response = await fetch(path, options);
+        const data = await response.json();
+        if (!data.ok) {
+          throw new Error(data.message || "请求失败");
+        }
+        return data;
+      }
+
+      async function refreshStatus() {
+        try {
+          const data = await request("/api/status");
+          const statusText = data.running ? "运行中" : "未运行";
+          document.getElementById("status").textContent = `状态：${statusText}`;
+          document.getElementById("bindAddr").textContent = `绑定地址：${data.bind_addr}`;
+          document.getElementById("logFile").textContent = `日志文件：${data.log_file}`;
+          const link = document.getElementById("openLink");
+          link.href = `http://${data.bind_addr}`;
+        } catch (err) {
+          document.getElementById("status").textContent = `状态：错误 (${err.message})`;
+        }
+      }
+
+      async function startServer() {
+        try {
+          const data = await request("/api/start", { method: "POST" });
+          alert(data.message);
+        } catch (err) {
+          alert(err.message);
+        } finally {
+          refreshStatus();
+        }
+      }
+
+      async function stopServer() {
+        try {
+          const data = await request("/api/stop", { method: "POST" });
+          alert(data.message);
+        } catch (err) {
+          alert(err.message);
+        } finally {
+          refreshStatus();
+        }
+      }
+
+      refreshStatus();
+      setInterval(refreshStatus, 5000);
+    </script>
+  </body>
+</html>
