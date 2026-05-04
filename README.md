@@ -1,0 +1,2 @@
+# VscodeOnAndroidWebView
+在Android端部署Vscode code-server并使用，提供Android本地化代码编辑能力
