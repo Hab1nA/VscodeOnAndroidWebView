@@ -312,7 +312,7 @@
   <!-- 跳转卡片（仅在运行时显示） -->
   <div class="card" id="openCard" style="display:none;">
     <h2>快速访问</h2>
-    <a class="btn btn-open" id="btnOpen" href="http://localhost:{{ port }}" target="_blank" rel="noopener">
+    <a class="btn btn-open" id="btnOpen" href="#" target="_blank" rel="noopener">
       <span>🔗</span> 打开 VS Code
     </a>
   </div>
@@ -353,7 +353,10 @@
   /* ======================================================
      常量
   ====================================================== */
-  const API_BASE = '';   // 与 server.py 同源，无需前缀
+  const API_BASE     = '';   // 与 server.py 同源，无需前缀
+  const VSCODE_PORT  = {{ port }};
+  // 使用访问控制面板时的同一主机名，兼容 localhost 及局域网 IP 访问
+  const VSCODE_URL   = `http://${window.location.hostname}:${VSCODE_PORT}`;
 
   /* ======================================================
      Toast 通知
@@ -401,6 +404,7 @@
       btnStart.disabled = true;
       btnStop.disabled  = false;
       openCard.style.display = 'block';
+      document.getElementById('btnOpen').href = VSCODE_URL;
     } else {
       setDotState('stopped');
       statusText.textContent = '已停止';

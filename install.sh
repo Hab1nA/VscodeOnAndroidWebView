@@ -102,7 +102,7 @@ fi
 VSCODE_PASSWORD="vscode123"
 mkdir -p ~/.config/code-server
 cat > ~/.config/code-server/config.yaml << EOF
-bind-addr: 127.0.0.1:8080
+bind-addr: 0.0.0.0:8080
 auth: password
 password: ${VSCODE_PASSWORD}
 cert: false
