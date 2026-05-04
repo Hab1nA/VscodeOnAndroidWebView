@@ -16,6 +16,7 @@ import socket
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 
 #===============================================================================
@@ -180,7 +181,6 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
 
         try:
             # 后台启动 code-server
-            # 使用 nohup 确保即使父进程退出, code-server 也继续运行
             log_file = os.path.expanduser("~/.config/code-server/code-server.log")
             os.makedirs(os.path.dirname(log_file), exist_ok=True)
 
@@ -197,13 +197,58 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
             # 写入 PID
             write_pid(proc.pid)
 
-            # 等待一小段时间确认进程没有立即崩溃
+            # 等待 code-server 绑定端口 (最多等待 10 秒)
+            port_ready = False
+            for i in range(20):
+                time.sleep(0.5)
+                # 先检查进程是否已退出
+                proc.poll()
+                if proc.returncode is not None:
+                    break
+                # 检查端口是否在监听
+                try:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock.settimeout(1)
+                    if sock.connect_ex(("127.0.0.1", 8080)) == 0:
+                        sock.close()
+                        port_ready = True
+                        break
+                    sock.close()
+                except Exception:
+                    pass
+
+            # 验证结果
             proc.poll()
-            if proc.returncode is not None:
+            if not port_ready:
+                # 启动失败: 提取日志尾部供排查
                 remove_pid_file()
+                err_msg = "code-server 启动失败："
+                if proc.returncode is not None:
+                    err_msg += f"进程退出，返回码: {proc.returncode}。"
+                else:
+                    # 进程仍在运行但端口未监听（尝试强制终止）
+                    try:
+                        os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+                    except Exception:
+                        pass
+                    err_msg += "端口 8080 在 10 秒内未开始监听。"
+
+                # 读取日志最后 5 行
+                log_tail = ""
+                try:
+                    with open(log_file, "r") as lf:
+                        lines = lf.readlines()
+                        if lines:
+                            log_tail = "".join(lines[-5:])
+                except Exception:
+                    pass
+
+                if log_tail:
+                    err_msg += f"\n日志尾部:\n{log_tail.rstrip()}"
+
                 self.send_json_response({
                     "success": False,
-                    "message": f"code-server 启动后立即退出，返回码: {proc.returncode}。请检查日志。",
+                    "message": err_msg,
                 }, 500)
                 return
 
@@ -249,7 +294,6 @@ class APIHandler(http.server.BaseHTTPRequestHandler):
                 for _ in range(10):  # 最多等待 5 秒
                     try:
                         os.kill(pid, 0)
-                        import time
                         time.sleep(0.5)
                     except OSError:
                         break
