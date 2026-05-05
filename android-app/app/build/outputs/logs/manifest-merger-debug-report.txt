@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:2:1-27:12
-INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:2:1-27:12
-INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:2:1-27:12
-INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:2:1-27:12
+ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:2:1-29:12
+INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:2:1-29:12
+INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:2:1-29:12
+INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:2:1-29:12
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\XKZ\.gradle\caches\8.12\transforms\d85cbbd40f0205ff4d558ea1baef582d\transformed\material-1.12.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\XKZ\.gradle\caches\8.12\transforms\11b0f31d00a86024f140def59ddfe7ba\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat-resources:1.7.0] C:\Users\XKZ\.gradle\caches\8.12\transforms\5b5eade5221b32bf6aee2ffa8ad8f2ac\transformed\appcompat-resources-1.7.0\AndroidManifest.xml:2:1-7:12
@@ -67,8 +67,8 @@ ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android
 	android:name
 		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:6:22-74
 application
-ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:8:5-25:19
-INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:8:5-25:19
+ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:8:5-27:19
+INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:8:5-27:19
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\XKZ\.gradle\caches\8.12\transforms\d85cbbd40f0205ff4d558ea1baef582d\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\XKZ\.gradle\caches\8.12\transforms\d85cbbd40f0205ff4d558ea1baef582d\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\XKZ\.gradle\caches\8.12\transforms\11b0f31d00a86024f140def59ddfe7ba\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
@@ -93,30 +93,34 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\XKZ\.gradle\caches
 		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:11:9-35
 	android:label
 		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:10:9-40
+	android:hardwareAccelerated
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:12:9-43
 	android:allowBackup
 		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:9:9-35
 	android:theme
-		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:13:9-53
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:15:9-53
 	android:networkSecurityConfig
-		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:12:9-69
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:14:9-69
+	android:usesCleartextTraffic
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:13:9-44
 activity#com.vscodeonandroid.app.MainActivity
-ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:15:9-23:20
+ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:17:9-25:20
 	android:exported
-		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:17:13-36
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:19:13-36
 	android:configChanges
-		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:18:13-87
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:20:13-87
 	android:name
-		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:16:13-41
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:18:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:19:13-22:29
+ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:21:13-24:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:20:17-69
+ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:22:17-69
 	android:name
-		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:20:25-66
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:22:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:21:17-77
+ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:23:17-77
 	android:name
-		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:21:27-74
+		ADDED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml:23:27-74
 uses-sdk
 INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\android-app\app\src\main\AndroidManifest.xml

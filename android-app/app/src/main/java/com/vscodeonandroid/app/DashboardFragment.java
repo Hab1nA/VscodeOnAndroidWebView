@@ -45,6 +45,15 @@ public class DashboardFragment extends Fragment {
 
         // Initialize components
         File scriptsDir = new File("/data/data/com.termux/files/home/VscodeOnAndroidWebView");
+        if (!scriptsDir.exists() || !scriptsDir.isDirectory()) {
+            // Scripts directory not available — show helpful message instead of crashing
+            tvShellOutput = view.findViewById(R.id.tvShellOutput);
+            if (tvShellOutput != null) {
+                tvShellOutput.setText("❌ 未检测到 Termux 环境\n"
+                        + "请确保已安装 Termux 并在其中运行过 install.sh。\n"
+                        + "预期路径: " + scriptsDir.getAbsolutePath());
+            }
+        }
         termuxExecutor = new TermuxExecutor(scriptsDir);
         dependencyChecker = new DependencyChecker(termuxExecutor);
         serviceManager = new ServiceManager(termuxExecutor);

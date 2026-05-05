@@ -23,10 +23,12 @@
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:extractNativeLibs="false"
+        android:hardwareAccelerated="true"
         android:label="VScodeOnAndroid"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.VscodeOnAndroid" >
+        android:theme="@style/Theme.VscodeOnAndroid"
+        android:usesCleartextTraffic="true" >
         <activity
             android:name="com.vscodeonandroid.app.MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"

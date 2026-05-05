@@ -78,10 +78,13 @@ public class MainActivity extends AppCompatActivity {
             return; // Already showing this fragment
         }
 
+        // Use a single atomic transaction to avoid IllegalStateException
+        androidx.fragment.app.FragmentTransaction transaction = fm.beginTransaction();
+
         if (target.isAdded()) {
-            fm.beginTransaction().show(target).commit();
+            transaction.show(target);
         } else {
-            fm.beginTransaction().add(R.id.contentFrame, target, tag).commit();
+            transaction.add(R.id.contentFrame, target, tag);
         }
 
         // Hide other fragments
@@ -90,9 +93,11 @@ public class MainActivity extends AppCompatActivity {
                 fm.findFragmentByTag("WEBVIEW")
         }) {
             if (f != null && f != target && f.isAdded()) {
-                fm.beginTransaction().hide(f).commit();
+                transaction.hide(f);
             }
         }
+
+        transaction.commit();
     }
 
     @Override
