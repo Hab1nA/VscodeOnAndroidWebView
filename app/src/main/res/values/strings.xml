@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PadCoder</string>
+    <string name="channel_code_server">Code Server 服务</string>
+    <string name="channel_description">code-server 后台运行状态通知</string>
+    <string name="status_starting">正在启动 code-server…</string>
+    <string name="status_running">code-server 运行中 (端口 %d)</string>
+    <string name="status_stopped">code-server 已停止</string>
+    <string name="status_error">code-server 异常</string>
+    <string name="btn_webview">打开 WebView</string>
+    <string name="hint_need_termux">请先安装 Termux 及 Termux:Tasker 插件</string>
+    <string name="hint_need_permission">需要授予存储权限和 Termux 执行授权</string>
+    <string name="toast_service_started">code-server 已启动</string>
+    <string name="toast_service_stopped">code-server 已停止</string>
+    <string name="dialog_diagnostics_title">诊断报告</string>
+</resources>

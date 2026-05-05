@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.padcoder.app-mergeDebugResources-36:/values-watch-v21/values-watch-v21.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\XKZ\\.gradle\\caches\\8.12\\transforms\\dc54cc5dee27e2666e4f0f4f759535ab\\transformed\\appcompat-1.7.1\\res\\values-watch-v21\\values-watch-v21.xml",
+                    "from": {
+                        "startLines": "2,6,10",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,271,499",
+                        "endLines": "5,9,13",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "266,494,724"
+                    }
+                }
+            ]
+        }
+    ]
+}
