@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1E1E2E">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Status Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#313244"
+            app:cardCornerRadius="12dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔍 依赖检查"
+                    android:textColor="#CDD6F4"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp" />
+
+                <Button
+                    android:id="@+id/btnCheckDeps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="检查依赖"
+                    android:textColor="#1E1E2E"
+                    android:backgroundTint="#A6E3A1"
+                    android:padding="12dp" />
+
+                <TextView
+                    android:id="@+id/tvDepStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#A6ADC8"
+                    android:textSize="14sp"
+                    android:padding="8dp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="monospace" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Shell Execution Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#313244"
+            app:cardCornerRadius="12dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⚡ 安装 / 卸载"
+                    android:textColor="#CDD6F4"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <Button
+                        android:id="@+id/btnInstall"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="安装 (install.sh)"
+                        android:textColor="#1E1E2E"
+                        android:backgroundTint="#89B4FA"
+                        android:layout_marginEnd="4dp" />
+
+                    <Button
+                        android:id="@+id/btnUninstall"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="卸载 (uninstall.sh)"
+                        android:textColor="#1E1E2E"
+                        android:backgroundTint="#F38BA8"
+                        android:layout_marginStart="4dp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvShellOutput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#A6ADC8"
+                    android:textSize="12sp"
+                    android:padding="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#181825"
+                    android:fontFamily="monospace"
+                    android:maxLines="20" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Service Management Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#313244"
+            app:cardCornerRadius="12dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🚀 服务管理"
+                    android:textColor="#CDD6F4"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <Button
+                        android:id="@+id/btnStartAll"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="启动服务"
+                        android:textColor="#1E1E2E"
+                        android:backgroundTint="#A6E3A1"
+                        android:layout_marginEnd="2dp" />
+
+                    <Button
+                        android:id="@+id/btnStopAll"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="停止服务"
+                        android:textColor="#1E1E2E"
+                        android:backgroundTint="#FAB387"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp" />
+
+                    <Button
+                        android:id="@+id/btnRestartAll"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="重启服务"
+                        android:textColor="#1E1E2E"
+                        android:backgroundTint="#CBA6F7"
+                        android:layout_marginStart="2dp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvServiceStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#A6ADC8"
+                    android:textSize="12sp"
+                    android:padding="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#181825"
+                    android:fontFamily="monospace"
+                    android:maxLines="15" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>

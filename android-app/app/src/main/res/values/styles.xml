@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.VscodeOnAndroid" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#1E1E2E</item>
+        <item name="colorPrimaryDark">#181825</item>
+        <item name="colorAccent">#CBA6F7</item>
+    </style>
+</resources>
