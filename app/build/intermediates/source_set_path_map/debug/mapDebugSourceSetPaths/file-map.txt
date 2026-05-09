@@ -1,41 +1,41 @@
-com.padcoder.app-core-runtime-2.2.0-0 C:\Users\XKZ\.gradle\caches\8.12\transforms\105a06e0a114a458853191e5ac5304e2\transformed\core-runtime-2.2.0\res
-com.padcoder.app-lifecycle-livedata-core-2.9.0-1 C:\Users\XKZ\.gradle\caches\8.12\transforms\151008f8ed46c8fe78d91a06bb238b67\transformed\lifecycle-livedata-core-2.9.0\res
-com.padcoder.app-core-1.16.0-2 C:\Users\XKZ\.gradle\caches\8.12\transforms\1bfb02ea389998b30963f7721ed118fc\transformed\core-1.16.0\res
-com.padcoder.app-material-1.13.0-3 C:\Users\XKZ\.gradle\caches\8.12\transforms\23f54d23d1cf7b8ddff222a7ab5131f1\transformed\material-1.13.0\res
-com.padcoder.app-lifecycle-livedata-core-ktx-2.9.0-4 C:\Users\XKZ\.gradle\caches\8.12\transforms\2a34d958f1000d92c7447e01ad92e2ea\transformed\lifecycle-livedata-core-ktx-2.9.0\res
-com.padcoder.app-activity-1.8.0-5 C:\Users\XKZ\.gradle\caches\8.12\transforms\2c5266d6eebf3e1873f126ed0e4b0ab9\transformed\activity-1.8.0\res
-com.padcoder.app-appcompat-resources-1.7.1-6 C:\Users\XKZ\.gradle\caches\8.12\transforms\4f55e5a0febbc5dc26c3a0aa7eb1867b\transformed\appcompat-resources-1.7.1\res
-com.padcoder.app-lifecycle-runtime-release-7 C:\Users\XKZ\.gradle\caches\8.12\transforms\6c423472ad93e134ca9dbcf74ae9cdcd\transformed\lifecycle-runtime-release\res
-com.padcoder.app-transition-1.5.0-8 C:\Users\XKZ\.gradle\caches\8.12\transforms\743f8b49e29bc919ae265d2f6de02deb\transformed\transition-1.5.0\res
-com.padcoder.app-recyclerview-1.2.1-9 C:\Users\XKZ\.gradle\caches\8.12\transforms\78e7746a9a2c00fdd0e3fc7c834592bf\transformed\recyclerview-1.2.1\res
-com.padcoder.app-annotation-experimental-1.4.1-10 C:\Users\XKZ\.gradle\caches\8.12\transforms\82c49fe08a296b1a6382ee5838195ba1\transformed\annotation-experimental-1.4.1\res
-com.padcoder.app-core-viewtree-1.0.0-11 C:\Users\XKZ\.gradle\caches\8.12\transforms\844d263347e28e00cbf86448d7e808eb\transformed\core-viewtree-1.0.0\res
-com.padcoder.app-coordinatorlayout-1.3.0-12 C:\Users\XKZ\.gradle\caches\8.12\transforms\8a81c706c31a9e930aa67eb346bef0e2\transformed\coordinatorlayout-1.3.0\res
-com.padcoder.app-savedstate-release-13 C:\Users\XKZ\.gradle\caches\8.12\transforms\91c038f7dcc1838872416e4f4433d9eb\transformed\savedstate-release\res
-com.padcoder.app-emoji2-1.3.0-14 C:\Users\XKZ\.gradle\caches\8.12\transforms\955190bab3b2738081e78a10a2c72a76\transformed\emoji2-1.3.0\res
-com.padcoder.app-constraintlayout-2.2.1-15 C:\Users\XKZ\.gradle\caches\8.12\transforms\9a51399137e650a0305a661d261934dc\transformed\constraintlayout-2.2.1\res
-com.padcoder.app-lifecycle-livedata-2.9.0-16 C:\Users\XKZ\.gradle\caches\8.12\transforms\9ac400157bfcfafbd13ce9e81dd06681\transformed\lifecycle-livedata-2.9.0\res
-com.padcoder.app-viewpager2-1.0.0-17 C:\Users\XKZ\.gradle\caches\8.12\transforms\a724ac0896225255bd1a1f247ba7dc3a\transformed\viewpager2-1.0.0\res
-com.padcoder.app-emoji2-views-helper-1.3.0-18 C:\Users\XKZ\.gradle\caches\8.12\transforms\acd3faedc2bbef0de7523c5152b3331e\transformed\emoji2-views-helper-1.3.0\res
-com.padcoder.app-cardview-1.0.0-19 C:\Users\XKZ\.gradle\caches\8.12\transforms\b72e129daaa576a5e34df92e63852520\transformed\cardview-1.0.0\res
-com.padcoder.app-lifecycle-process-2.9.0-20 C:\Users\XKZ\.gradle\caches\8.12\transforms\b8c8a7861d42164bae81e22371080565\transformed\lifecycle-process-2.9.0\res
-com.padcoder.app-startup-runtime-1.1.1-21 C:\Users\XKZ\.gradle\caches\8.12\transforms\baaa089bc56c5f198239ce76d785ec1c\transformed\startup-runtime-1.1.1\res
-com.padcoder.app-dynamicanimation-1.1.0-22 C:\Users\XKZ\.gradle\caches\8.12\transforms\bedab6d2df7fffd43c2cfab2a5a5c393\transformed\dynamicanimation-1.1.0\res
-com.padcoder.app-lifecycle-viewmodel-savedstate-release-23 C:\Users\XKZ\.gradle\caches\8.12\transforms\c00190981cb23a58fe6ee2f25882929b\transformed\lifecycle-viewmodel-savedstate-release\res
-com.padcoder.app-fragment-1.5.4-24 C:\Users\XKZ\.gradle\caches\8.12\transforms\c597cbb4c16027726724348c13067f64\transformed\fragment-1.5.4\res
-com.padcoder.app-graphics-shapes-release-25 C:\Users\XKZ\.gradle\caches\8.12\transforms\cc1aaba69fbc455a1ad2954e952af5aa\transformed\graphics-shapes-release\res
-com.padcoder.app-core-ktx-1.16.0-26 C:\Users\XKZ\.gradle\caches\8.12\transforms\d7972a1f27f2bd3aeff0316ee4e7455f\transformed\core-ktx-1.16.0\res
-com.padcoder.app-appcompat-1.7.1-27 C:\Users\XKZ\.gradle\caches\8.12\transforms\dc54cc5dee27e2666e4f0f4f759535ab\transformed\appcompat-1.7.1\res
-com.padcoder.app-lifecycle-viewmodel-ktx-2.9.0-28 C:\Users\XKZ\.gradle\caches\8.12\transforms\e08d2aa0dd62d1d17c2e109391347e05\transformed\lifecycle-viewmodel-ktx-2.9.0\res
-com.padcoder.app-lifecycle-viewmodel-release-29 C:\Users\XKZ\.gradle\caches\8.12\transforms\e2d7bd3a5cbdf87386c2473758d3bec9\transformed\lifecycle-viewmodel-release\res
-com.padcoder.app-lifecycle-livedata-ktx-2.9.0-30 C:\Users\XKZ\.gradle\caches\8.12\transforms\e639c0323292d7f6f7f924387b4a3217\transformed\lifecycle-livedata-ktx-2.9.0\res
-com.padcoder.app-drawerlayout-1.1.1-31 C:\Users\XKZ\.gradle\caches\8.12\transforms\e6bdc5d4e2f765c386ac9e82831a6206\transformed\drawerlayout-1.1.1\res
-com.padcoder.app-tracing-1.2.0-32 C:\Users\XKZ\.gradle\caches\8.12\transforms\f4c7df7d30cc476f879ef5841a10104d\transformed\tracing-1.2.0\res
-com.padcoder.app-profileinstaller-1.4.0-33 C:\Users\XKZ\.gradle\caches\8.12\transforms\f592d6ad1f73af299eda06abf22efe20\transformed\profileinstaller-1.4.0\res
-com.padcoder.app-pngs-34 C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\app\build\generated\res\pngs\debug
-com.padcoder.app-resValues-35 C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\app\build\generated\res\resValues\debug
-com.padcoder.app-packageDebugResources-36 C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.padcoder.app-packageDebugResources-37 C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.padcoder.app-debug-38 C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\app\build\intermediates\merged_res\debug\mergeDebugResources
-com.padcoder.app-debug-39 C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\app\src\debug\res
-com.padcoder.app-main-40 C:\Users\XKZ\Documents\VSCode Projects\VscodeOnAndroidWebView\app\src\main\res
+com.padcoder.app-savedstate-release-0 /root/.gradle/caches/8.14.4/transforms/08783916bbd46630eeb54b90b915c4cf/transformed/savedstate-release/res
+com.padcoder.app-annotation-experimental-1.4.1-1 /root/.gradle/caches/8.14.4/transforms/0883416d050c7003f3c89f991d54f39f/transformed/annotation-experimental-1.4.1/res
+com.padcoder.app-drawerlayout-1.1.1-2 /root/.gradle/caches/8.14.4/transforms/0f754ae104920fafeb4a0f0791995621/transformed/drawerlayout-1.1.1/res
+com.padcoder.app-appcompat-resources-1.7.1-3 /root/.gradle/caches/8.14.4/transforms/24a067b6f64679ea598bb976dc45aea2/transformed/appcompat-resources-1.7.1/res
+com.padcoder.app-coordinatorlayout-1.3.0-4 /root/.gradle/caches/8.14.4/transforms/296853afd147c481a37ffd1f61be4eef/transformed/coordinatorlayout-1.3.0/res
+com.padcoder.app-material-1.13.0-5 /root/.gradle/caches/8.14.4/transforms/2b6fedf8da46838b6e7c71052e9a342c/transformed/material-1.13.0/res
+com.padcoder.app-constraintlayout-2.2.1-6 /root/.gradle/caches/8.14.4/transforms/2fff583aff91c40550752f243f9a233c/transformed/constraintlayout-2.2.1/res
+com.padcoder.app-lifecycle-process-2.9.0-7 /root/.gradle/caches/8.14.4/transforms/32628d02b70db15e2c6fc46b5f07c247/transformed/lifecycle-process-2.9.0/res
+com.padcoder.app-lifecycle-viewmodel-release-8 /root/.gradle/caches/8.14.4/transforms/3621ee551573fe901558f7ac0d2fd955/transformed/lifecycle-viewmodel-release/res
+com.padcoder.app-recyclerview-1.2.1-9 /root/.gradle/caches/8.14.4/transforms/370fbf98ca35420ab1b7ea9fa68247f8/transformed/recyclerview-1.2.1/res
+com.padcoder.app-lifecycle-viewmodel-savedstate-release-10 /root/.gradle/caches/8.14.4/transforms/3ab6a577839cea543b5eb992808f6387/transformed/lifecycle-viewmodel-savedstate-release/res
+com.padcoder.app-viewpager2-1.0.0-11 /root/.gradle/caches/8.14.4/transforms/3f95c5e12f50df1ae8ee96b703950d07/transformed/viewpager2-1.0.0/res
+com.padcoder.app-core-viewtree-1.0.0-12 /root/.gradle/caches/8.14.4/transforms/43dd5ba278a995b3479bef7c72e07df0/transformed/core-viewtree-1.0.0/res
+com.padcoder.app-lifecycle-viewmodel-ktx-2.9.0-13 /root/.gradle/caches/8.14.4/transforms/49b4afdde4d0a3a89e68a801a9fea902/transformed/lifecycle-viewmodel-ktx-2.9.0/res
+com.padcoder.app-lifecycle-livedata-2.9.0-14 /root/.gradle/caches/8.14.4/transforms/4ac2c5d1bb963aab5bbfeadcb73cf28f/transformed/lifecycle-livedata-2.9.0/res
+com.padcoder.app-dynamicanimation-1.1.0-15 /root/.gradle/caches/8.14.4/transforms/4d69ba9fcc4d69c6096c3e2455671c98/transformed/dynamicanimation-1.1.0/res
+com.padcoder.app-emoji2-views-helper-1.3.0-16 /root/.gradle/caches/8.14.4/transforms/5d4fd662219399310d4d3289a43f372b/transformed/emoji2-views-helper-1.3.0/res
+com.padcoder.app-core-ktx-1.16.0-17 /root/.gradle/caches/8.14.4/transforms/5de2234d2944baa9e61561919289f240/transformed/core-ktx-1.16.0/res
+com.padcoder.app-lifecycle-livedata-core-ktx-2.9.0-18 /root/.gradle/caches/8.14.4/transforms/6b8f3c90b829ebb2bd77331831639bb2/transformed/lifecycle-livedata-core-ktx-2.9.0/res
+com.padcoder.app-lifecycle-livedata-ktx-2.9.0-19 /root/.gradle/caches/8.14.4/transforms/6f4ca62c9159cc72a72cabac778c0880/transformed/lifecycle-livedata-ktx-2.9.0/res
+com.padcoder.app-appcompat-1.7.1-20 /root/.gradle/caches/8.14.4/transforms/70d3aa852f1232ebad2feca3ebac9001/transformed/appcompat-1.7.1/res
+com.padcoder.app-activity-1.8.0-21 /root/.gradle/caches/8.14.4/transforms/71bdc278c2d0040da5140e9cc0447ed3/transformed/activity-1.8.0/res
+com.padcoder.app-lifecycle-runtime-release-22 /root/.gradle/caches/8.14.4/transforms/891a29ade6e66fe4c1231d781dbc51e8/transformed/lifecycle-runtime-release/res
+com.padcoder.app-graphics-shapes-release-23 /root/.gradle/caches/8.14.4/transforms/90e54af7f9063f67a98f11ae370cec5b/transformed/graphics-shapes-release/res
+com.padcoder.app-cardview-1.0.0-24 /root/.gradle/caches/8.14.4/transforms/995d688d9b901851925c4160a78e1dbd/transformed/cardview-1.0.0/res
+com.padcoder.app-tracing-1.2.0-25 /root/.gradle/caches/8.14.4/transforms/ae5b554d0c7d49e5353528812599fb6b/transformed/tracing-1.2.0/res
+com.padcoder.app-core-1.16.0-26 /root/.gradle/caches/8.14.4/transforms/b3d0bae263af49ecf51167ae14800a8a/transformed/core-1.16.0/res
+com.padcoder.app-emoji2-1.3.0-27 /root/.gradle/caches/8.14.4/transforms/c0806e26f1d3049ad827b10639d3492d/transformed/emoji2-1.3.0/res
+com.padcoder.app-fragment-1.5.4-28 /root/.gradle/caches/8.14.4/transforms/e05cf611aed7b60add5ba99db896e42a/transformed/fragment-1.5.4/res
+com.padcoder.app-lifecycle-livedata-core-2.9.0-29 /root/.gradle/caches/8.14.4/transforms/e46ee32d4dab427437bc7ba79a61151e/transformed/lifecycle-livedata-core-2.9.0/res
+com.padcoder.app-profileinstaller-1.4.0-30 /root/.gradle/caches/8.14.4/transforms/e5c5781d9e97cf42991c36de8317d878/transformed/profileinstaller-1.4.0/res
+com.padcoder.app-core-runtime-2.2.0-31 /root/.gradle/caches/8.14.4/transforms/e92e3bf83d8b58c7d71a2af84b055ae2/transformed/core-runtime-2.2.0/res
+com.padcoder.app-transition-1.5.0-32 /root/.gradle/caches/8.14.4/transforms/ec559ae30f1c13b9cca610a48829cdc9/transformed/transition-1.5.0/res
+com.padcoder.app-startup-runtime-1.1.1-33 /root/.gradle/caches/8.14.4/transforms/feae5e5847ded79cecfddf695d064d31/transformed/startup-runtime-1.1.1/res
+com.padcoder.app-pngs-34 /workspace/app/build/generated/res/pngs/debug
+com.padcoder.app-resValues-35 /workspace/app/build/generated/res/resValues/debug
+com.padcoder.app-packageDebugResources-36 /workspace/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.padcoder.app-packageDebugResources-37 /workspace/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.padcoder.app-debug-38 /workspace/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.padcoder.app-debug-39 /workspace/app/src/debug/res
+com.padcoder.app-main-40 /workspace/app/src/main/res
