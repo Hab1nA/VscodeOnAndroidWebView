@@ -265,7 +265,6 @@ object CodeServerManager {
                 else
                     echo "NO_PROCESS_FOUND"
                 fi
-                pkill -f "code-server.*${DEFAULT_PORT}" 2>/dev/null || true
             """.trimIndent()
         )
 

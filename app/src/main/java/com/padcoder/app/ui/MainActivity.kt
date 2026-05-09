@@ -535,6 +535,10 @@ class MainActivity : ComponentActivity() {
      * 检查并请求缺失的权限。
      */
     fun checkAndRequestPermissions() {
+        requestPermissionsIfNeeded()
+    }
+
+    private fun requestPermissionsIfNeeded() {
         val state = viewModel.uiState.value
 
         if (state.environmentStatus == TermuxBridge.EnvironmentStatus.NEED_TERMUX) {

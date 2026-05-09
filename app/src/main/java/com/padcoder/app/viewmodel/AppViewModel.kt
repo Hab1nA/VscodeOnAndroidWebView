@@ -311,7 +311,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             val updateScript = when (component) {
                 UpdateComponent.NODE_JS -> """
                     pkg update -y 2>&1
-                    pkg upgrade -y nodejs-lts 2>&1
+                    pkg upgrade -y nodejs 2>&1
                     node --version
                 """.trimIndent()
 
@@ -471,12 +471,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             )
 
             _uiState.update {
-                UiState(
+                it.copy(
+                    isLoading = false,
                     environmentStatus = it.environmentStatus
                 )
             }
-
-            _uiState.update { it.copy(isLoading = false) }
 
             when (result) {
                 is TermuxBridge.CommandResult.Success -> {
