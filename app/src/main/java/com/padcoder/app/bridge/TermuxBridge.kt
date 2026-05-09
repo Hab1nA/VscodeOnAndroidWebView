@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
-import android.util.Base64
 import android.util.Log
 import kotlinx.coroutines.*
 
@@ -17,8 +16,7 @@ import kotlinx.coroutines.*
  * 关键设计决策：
  * 1. 仅通过 Termux 执行二进制文件，绝不在 App 自有进程中 exec。
  * 2. 优选 Termux:Tasker RUN_COMMAND Intent 路径。
- * 3. 使用 Base64 编码命令避免转义问题。
- * 4. 同步执行通过 PendingIntent 回调获取结果。
+ * 3. 同步执行通过 PendingIntent 回调获取结果。
  */
 object TermuxBridge {
 
@@ -220,7 +218,7 @@ object TermuxBridge {
     /**
      * 内部命令执行实现。
      *
-     * 命令通过 Base64 编码传递，避免 Shell 注入和特殊字符问题。
+     * 命令直接传递，依赖 shell 正确处理转义。
      * 长时间操作（下载、安装）用后台模式，短操作用同步模式。
      */
     private suspend fun executeCommandInternal(
@@ -294,12 +292,14 @@ object TermuxBridge {
         val requestCode = (System.currentTimeMillis() and 0xFFFF).toInt()
         var receiver: BroadcastReceiver? = null
         var resumed = false
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
         receiver = object : BroadcastReceiver() {
             override fun onReceive(ctx: Context?, resultIntent: Intent?) {
                 if (resumed) return
                 if (resultIntent == null) {
                     resumed = true
+                    scope.cancel()
                     if (continuation.isActive) {
                         continuation.resumeWith(Result.success(CommandResult.Error("No result received")))
                     }
@@ -319,6 +319,7 @@ object TermuxBridge {
                 val output = if (stderr.isNotEmpty()) "$stdout\n[STDERR]: $stderr" else stdout
 
                 resumed = true
+                scope.cancel()
                 if (continuation.isActive) {
                     continuation.resumeWith(
                         Result.success(
@@ -362,12 +363,12 @@ object TermuxBridge {
 
         intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", pendingIntent)
 
-        // 超时保护（可由上层指定超时时间）
-        val timeoutJob = CoroutineScope(Dispatchers.IO).launch {
+        val timeoutJob = scope.launch {
             delay(timeoutMs)
             if (!resumed && continuation.isActive) {
                 resumed = true
                 try { context.unregisterReceiver(receiver) } catch (_: Exception) {}
+                scope.cancel()
                 continuation.resumeWith(Result.success(CommandResult.Error("Command timed out after ${timeoutMs / 60_000} minutes")))
             }
         }
@@ -382,6 +383,7 @@ object TermuxBridge {
         continuation.invokeOnCancellation {
             try { context.unregisterReceiver(receiver) } catch (_: Exception) {}
             timeoutJob.cancel()
+            scope.cancel()
         }
     }
 

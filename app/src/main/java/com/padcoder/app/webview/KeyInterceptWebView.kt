@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.FrameLayout
 
 /**
  * 深度定制的 WebView，核心使命：
@@ -78,7 +76,6 @@ class KeyInterceptWebView @JvmOverloads constructor(
             KeyEvent.KEYCODE_SPACE,      // Ctrl+Space: 触发建议
             KeyEvent.KEYCODE_PERIOD,     // Ctrl+.: 快速修复
             KeyEvent.KEYCODE_COMMA,      // Ctrl+,: 设置
-            KeyEvent.KEYCODE_F,          // Ctrl+F: 搜索
             KeyEvent.KEYCODE_E,          // Ctrl+E: 快速打开最近
             KeyEvent.KEYCODE_Q,          // Ctrl+Q: 快速打开视图
             KeyEvent.KEYCODE_R,          // Ctrl+R: 最近项目
@@ -306,7 +303,7 @@ class KeyInterceptWebView @JvmOverloads constructor(
 
                 // 禁用 VS Code 的 Alt 键菜单激活（防止 Alt 键触发浏览器菜单栏）
                 document.addEventListener('keydown', function(e) {
-                    if (e.altKey && e.keyCode === 18) {
+                    if (e.altKey) {
                         e.preventDefault();
                     }
                 }, { capture: true });
